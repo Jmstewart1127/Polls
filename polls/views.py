@@ -37,11 +37,20 @@ def create_question(request):
     question = request.POST['question']
     q = Question(question_text=question, pub_date=datetime.datetime.now())
     q.save()
-    return HttpResponseRedirect('polls/addquestion.html')
+    return show_create_choices_page(request, q.id)
 
 
 def show_create_choices_page(request, question_id):
-    return render(request, 'polls/addchoices.html')
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, 'polls/addchoices.html', {'question': question})
+
+
+def create_choice(request, question_id):
+    choice = request.POST['choice']
+    question = get_object_or_404(Question, pk=question_id)
+    c = Choice(question=question, choice_text=choice, votes=0)
+    c.save()
+    return render(request, 'polls/addchoices.html', {'question': question})
 
 
 def vote(request, question_id):
@@ -58,17 +67,18 @@ def vote(request, question_id):
         selected_choice.save()
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
-
-def login_page(request):
-    return render(request, 'polls/login.html')
-
-
-def user_login(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return render(request, 'polls/welcome.html')
-    else:
-        EOFError('Invalid username or password')
+# def index(request):
+#     latest_question_list = Question.objects.order_by('-pub_date')[:5]
+#     context = {'latest_question_list': latest_question_list}
+#     return render(request, 'polls/index.html', context)
+#
+#
+# def detail(request, question_id):
+#     question = get_object_or_404(Question, pk=question_id)
+#     return render(request, 'polls/detail.html', {'question': question})
+#
+# def results(request, question_id):
+#     question = get_object_or_404(Question, pk=question_id)
+#     return render(request, 'polls/results.html', {'question': question})
+#
+#
