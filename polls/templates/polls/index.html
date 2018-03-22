@@ -5,6 +5,10 @@
     <title>Title</title>
 </head>
 <body>
+<ul>
+    <li><a href="{% url 'user:login' %}">Login</a></li>
+    <li><a href="{% url 'user:create' %}">Create Account</a></li>
+</ul>
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}

@@ -6,12 +6,15 @@
 </head>
 <body>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-
+{% if user.is_authenticated %}
 <form action="{% url 'polls:questionCreated' %}" method="post">
 {% csrf_token %}
     <input type="text" name="question" id="question" />
     <label>Poll Title</label><br />
     <input type="submit" value="Create" />
 </form>
+{% else %}
+<p>You must be logged in to create a poll</p>
+{% endif %}
 </body>
 </html>

@@ -1,10 +1,8 @@
-from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.models import User
-from django.http import Http404
-from django.template import loader
 from django.urls import reverse
+from rest_framework import viewsets
+from polls.serializers import ChoiceSerializer, QuestionSerializer
 from .models import Choice, Question, ChoiceSelected
 from django.views import generic
 import datetime
@@ -27,6 +25,16 @@ class DetailView(generic.DetailView):
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
+
+
+class ChoiceViewSet(viewsets.ModelViewSet):
+    queryset = Choice.objects.all()
+    serializer_class = ChoiceSerializer
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
 
 
 def show_create_question_page(request):

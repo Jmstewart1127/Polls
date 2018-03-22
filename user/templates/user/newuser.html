@@ -5,12 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-<form action="{% url 'polls:vote' question.id %}" method="post">
+<form action="{% url 'user:addUser' %}" method="post">
 {% csrf_token %}
-{% for choice in question.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-{% endfor %}
+    <input type="text" name="username" id="username" />
+    <label>Username</label><br />
+    <input type="text" name="email" id="email" />
+    <label>Email Address</label><br />
+    <input type="password" name="password" id="password" />
+    <label>Password</label><br />
+    <input type="password" name="retype-password" id="retype-password" />
+    <label>Re-type Password</label><br />
+    <input type="submit" value="Login" />
 <input type="submit" value="Vote" />
 </form>
 </body>

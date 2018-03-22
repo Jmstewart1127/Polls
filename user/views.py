@@ -1,5 +1,23 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.shortcuts import render
+
+
+def create_user_page(request):
+    return render(request, 'user/newuser.html')
+
+
+def create_user(request):
+    username = request.POST['username']
+    email = request.POST['email']
+    password = request.POST['password']
+    password1 = request.POST['retype-password']
+    if password == password1:
+        u = User.objects.create_user(username=username, email=email, password=password, is_active=1)
+        u.save()
+        return render(request, 'polls/index.html')
+    else:
+        return render(request, 'user/newuser.html')
 
 
 def login_page(request):
