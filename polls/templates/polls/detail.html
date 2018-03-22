@@ -17,5 +17,6 @@
 {% endfor %}
 <input type="submit" value="Vote" />
 </form>
+<a href="{% url 'polls:results' question.id %}">View Results</a>
 </body>
 </html>

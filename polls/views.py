@@ -3,8 +3,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from rest_framework import viewsets
 from polls.serializers import ChoiceSerializer, QuestionSerializer
+from django.contrib.auth.models import User
 from .models import Choice, Question, ChoiceSelected
 from django.views import generic
+from .exceptions import Error, AlreadyVoted
 import datetime
 
 
@@ -61,18 +63,30 @@ def create_choice(request, question_id):
     return render(request, 'polls/addchoices.html', {'question': question})
 
 
+def user_has_voted(request, question_id):
+    question = Question.objects.get(pk=question_id)
+    choice_selected = ChoiceSelected.objects.filter(question=question, user=request.user).exists()
+    if choice_selected is False:
+        return False
+    else:
+        raise AlreadyVoted
+
+
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
+        user_has_voted(request, question_id)
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
+    except (KeyError, Choice.DoesNotExist, AlreadyVoted):
         return render(request, 'polls/detail.html', {
             'question': question,
-            'error_message': "You didn't select a choice.",
+            'error_message': "You didn't select a choice, or have already voted.",
         })
     else:
         selected_choice.votes += 1
         selected_choice.save()
+        selected_by = ChoiceSelected(choice=selected_choice, question=question, selection_made=True, user=request.user)
+        selected_by.save()
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
 # def index(request):
