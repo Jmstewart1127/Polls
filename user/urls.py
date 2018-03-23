@@ -5,7 +5,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'user', views.UserViewSet)
+router.register(r'api', views.UserViewSet)
 
 app_name = 'user'
 urlpatterns = [
