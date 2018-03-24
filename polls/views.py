@@ -1,7 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-from rest_framework import viewsets
+from rest_framework import viewsets, status, generics
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
+
 from polls.serializers import ChoiceSerializer, QuestionSerializer
 from django.contrib.auth.models import User
 from .models import Choice, Question, ChoiceSelected
@@ -32,11 +35,50 @@ class ResultsView(generic.DetailView):
 class ChoiceViewSet(viewsets.ModelViewSet):
     queryset = Choice.objects.all()
     serializer_class = ChoiceSerializer
+    lookup_field = 'question'
+
+    def get(self):
+        choice = Choice.values_list('question', flat=True)
+        return choice
+
+
+class ChoiceList(generics.ListAPIView):
+    serializer_class = ChoiceSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        question = self.kwargs['question']
+        return Choice.objects.filter(question=question)
 
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    lookup_field = 'id'
+
+    def post(self):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self):
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.delete()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def show_create_question_page(request):

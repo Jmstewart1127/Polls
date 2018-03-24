@@ -10,6 +10,7 @@ from user.serializers import UserSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'id'
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)

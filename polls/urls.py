@@ -1,6 +1,8 @@
 from django.urls import path
 from django.conf.urls import url, include
 from rest_framework import routers
+
+from polls.views import ChoiceList
 from . import views
 
 router = routers.DefaultRouter()
@@ -19,5 +21,6 @@ urlpatterns = [
 
     ## REST URLS ##
     url(r'^', include(router.urls)),
+    url('^choice/(?P<username>.+)/$', ChoiceList.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
